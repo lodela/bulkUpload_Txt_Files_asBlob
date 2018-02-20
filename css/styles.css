@@ -1,0 +1,63 @@
+#drop_zone {
+  border: 2px dashed #bbb;
+  -moz-border-radius: 5px;
+  -webkit-border-radius: 5px;
+  border-radius: 5px;
+  padding: 25px;
+  text-align: center;
+  font: 20pt bold 'Vollkorn';
+  color: #bbb;
+}
+.mainBtns{
+  margin: 7px 0 0 0;
+}
+button span{
+  color:cornflowerblue;
+}
+#mantenimiento{
+  display: none;
+}
+.close{
+  position:absolute;
+  float: right;
+  top: 5px;
+  right:7px;
+  color:red;
+}
+.close span{
+  color: red;
+}
+#addNewFileFormat .row{
+  margin:0 0 7px 0;
+}
+#AddJk2bulkUploadTxt{
+  display:none;
+}
+.tt-menu{
+  border:solid 1px red;
+  width: 100%;
+  padding: 0 10px;
+  background: white;
+  cursor: pointer;
+}
+.tt-menu .tt-suggestion:hover{
+  background-color: lightgrey;
+}
+#inputFileName{
+  width:255px;
+}
+.modal .message{
+  display:none;
+  font-size: 12px;
+  padding: 3px 5px;
+  margin: 0;
+}
+.danger{
+  color:red;
+}
+.alert{
+  color:orange;
+}
+.success{
+  color:green;
+}

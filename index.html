@@ -1,0 +1,280 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>Subir multiple txt :: bulk upload txt file</title>
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+  <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+<header>
+  <nav class="navbar navbar-default">
+  <div class="container-fluid">
+    <!-- Brand and toggle get grouped for better mobile display -->
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1" aria-expanded="false">
+        <span class="sr-only">Toggle navigation</span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" href="#" rel="home">SubirTxt's</a>
+    </div>
+    <div class="btn-group nav navbar-nav navbar-right mainBtns" role="group" aria-label="...">
+      <button type="button" class="btn btn-default save"><span class="glyphicon glyphicon-floppy-disk"></span></button>
+      <button type="button" class="btn btn-default" rel="bulkUploadTxtFiles2sections"><span class="glyphicon glyphicon-briefcase"></span></button>
+      <button type="button" class="btn btn-default search"><span class="glyphicon glyphicon-search"></span></button>
+    </div>
+
+    <!-- Collect the nav links, forms, and other content for toggling -->
+    <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+      <ul class="nav navbar-nav">
+        <li><a href="#" rel="mantenimiento">Mantenimiento <span class="sr-only">(current)</span></a></li>
+        <li><a href="#">Link</a></li>
+        <li class="dropdown">
+          <a class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Dropdown <span class="caret"></span></a>
+          <ul class="dropdown-menu">
+            <li><a href="#">Action</a></li>
+            <li><a href="#">Another action</a></li>
+            <li><a href="#">Something else here</a></li>
+            <li role="separator" class="divider"></li>
+            <li><a href="#">Separated link</a></li>
+            <li role="separator" class="divider"></li>
+            <li><a href="#">One more separated link</a></li>
+          </ul>
+        </li>
+      </ul>
+    </div><!-- /.navbar-collapse -->
+  </div><!-- /.container-fluid -->
+</nav>
+</header>
+<div class="container">
+  <div class="row">
+    <article id="home">
+      <main>hola home</main>
+    </article>
+    <article id="mantenimiento">
+      <h3>Registro de archivos y sus destinos:</h3>
+      <table id="bulkUploadFileReg" class="table">
+        <div class="btn-group btn-group-xs navbar-right" role="group" aria-label="Extra-small button group">
+          <button id="" type="button" class="btn btn-default" rel="addNewRegister2BulkUpload"><span class="glyphicon glyphicon-plus"></span> Agregar registro</button>
+        </div>
+        <thead>
+          <tr>
+            <th>#</th>
+            <th>Nombre</th>
+            <th>Sección</th>
+            <th>Tipo</th>
+            <th>Separador</th>
+            <th>Formato</th>
+            <th>Cols</th>
+            <th>¿CreaEdo?</th>
+            <th>Nombre Edo.</th>
+            <th>Manto.</th>
+          </tr>
+        </thead>
+        <tbody id="bulkUploadTxtTBody"></tbody>
+      </table>
+    </article>
+  </div>
+</div>
+<div class="modal" id="addNewRegister2BulkUpload_modal" tabindex="-1" role="dialog">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h4 class="modal-title">Agregar un nuevo registro para subir archivos...</h4>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <form id="addNewFileFormat">
+          <div class="row">
+            <div class="col-sm-6">
+              <label for="inputFileName" >Archivo:</label>
+              <input type="text" class="form-control" id="inputFileName" placeholder="nombre archivo txt">
+              <p class="message"></p>
+            </div>
+            <div class="col-sm-6">
+              <label for="selectFileSection">Sección:</label>
+              <select class="form-control" id="selectFileSection">
+                <option value="null" selected disabled>¿a dónde va a cargar el archivo?</option>
+              </select>
+            </div>
+          </div>
+          <div class="row" id="AddJk2bulkUploadTxt">
+            <div class="col-sm-4">
+              <label for="chk2mkJk" >Si no existe:</label>
+              <span class="button-checkbox">
+                <button type="button" class="btn form-control" id="chk2mkJk" value="" data-color="success">¿Crear jerarquía?</button>
+                <input type="checkbox" class="hidden"/>
+              </span>
+            </div>
+            <div class="col-sm-8">
+              <label for="inputJkName" >Nombre de estado ó Jerarquía:</label>
+              <input type="text" class="form-control" id="inputJkName" placeholder="nombre del estado">
+            </div>
+          </div>
+          <div class="row ">
+            <div class="col-sm-3">
+              <label for="type">Tipo:</label>
+              <select class="form-control ndd" id="type">
+                <option value="txt" selected>TXT</option>
+                <option value="csv">CSV</option>
+              </select>
+            </div>
+            <div class="col-sm-3">
+              <label for="splytedBy">Separador:</label>
+              <select class="form-control ndd" id="splytedBy">
+                <option value="tab">TAB</option>
+                <option value="pipe"> | </option>
+                <option value="arroba"> @ </option>
+                <option value="dash"> - </option>
+                <option value="underscore"> _ </option>
+                <option value="comma"> , </option>
+                <option value="semicolon"> ; </option>
+              </select>
+            </div>
+            <div class="col-sm-4">
+              <label for="format">formato:</label>
+              <select class="form-control ndd" id="format">
+                <option value="keyValue">Padre-Hijo-Desc</option>
+                <option value="horizontal">Horizontal</option>
+              </select>
+            </div>
+            <div class="col-sm-2">
+              <label for="cols">Columnas:</label>
+              <select class="form-control ndd" id="cols">
+                <option value="2"> 2 </option>
+                <option value="3"> 3 </option>
+                <option value="4"> 4 </option>
+                <option value="5"> 5 </option>
+                <option value="6"> 6 </option>
+                <option value="7"> 7 </option>
+              </select>
+            </div>
+          </div>
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="saveRegister4bulkUpload btn btn-primary" rel="saveReg2blkUpld">Guardar registro</button>
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Cerrar</button>
+      </div>
+    </div>
+  </div>
+</div>
+<div class="modal" id="edit_modal" tabindex="-1" role="dialog">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h4 class="modal-title">Editar registro para subir archivos...</h4>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <form id="EditFileFormat">
+          <div class="row">
+            <div class="col-sm-6">
+              <label for="edit_FileName" >Archivo:</label>
+              <input type="text" class="form-control" id="edit_FileName" placeholder="nombre archivo txt">
+            </div>
+            <div class="col-sm-6">
+              <label for="edit_FileSection">Sección:</label>
+              <select class="form-control" id="edit_FileSection">
+                <option value="null" selected disabled>que pepe...</option>
+              </select>
+            </div>
+          </div>
+          <div class="row" id="edit_AddJk2bulkUploadTxt">
+            <div class="col-sm-4">
+              <label for="chk2mkJk" >Si no existe:</label>
+              <span class="button-checkbox">
+                <button type="button" class="btn form-control" id="chk2mkJk" value="" data-color="success">¿Crear jerarquía?</button>
+                <input type="checkbox" class="hidden"/>
+              </span>
+            </div>
+            <div class="col-sm-8">
+              <label for="inputJkName" >Nombre de estado ó Jerarquía:</label>
+              <input type="text" class="form-control" id="inputJkName" placeholder="nombre del estado">
+            </div>
+          </div>
+          <div class="row ">
+            <div class="col-sm-3">
+              <label for="type">Tipo:</label>
+              <select class="form-control ndd" id="type">
+                <option value="txt" selected>TXT</option>
+                <option value="csv">CSV</option>
+              </select>
+            </div>
+            <div class="col-sm-3">
+              <label for="splytedBy">Separador:</label>
+              <select class="form-control ndd" id="splytedBy">
+                <option value="tab">TAB</option>
+                <option value="pipe"> | </option>
+                <option value="arroba"> @ </option>
+                <option value="dash"> - </option>
+                <option value="underscore"> _ </option>
+                <option value="comma"> , </option>
+                <option value="semicolon"> ; </option>
+              </select>
+            </div>
+            <div class="col-sm-4">
+              <label for="format">formato:</label>
+              <select class="form-control ndd" id="format">
+                <option value="keyValue">Padre-Hijo-Desc</option>
+                <option value="horizontal">Horizontal</option>
+              </select>
+            </div>
+            <div class="col-sm-2">
+              <label for="cols">Columnas:</label>
+              <select class="form-control ndd" id="cols">
+                <option value="2"> 2 </option>
+                <option value="3"> 3 </option>
+                <option value="4"> 4 </option>
+                <option value="5"> 5 </option>
+                <option value="6"> 6 </option>
+                <option value="7"> 7 </option>
+              </select>
+            </div>
+          </div>
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="saveRegister4bulkUpload btn btn-primary" rel="saveReg2blkUpld">Guardar registro</button>
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Cerrar</button>
+      </div>
+    </div>
+  </div>
+</div>
+<div class="modal" id="bulkUploadTxtFiles2sections_modal" tabindex="-1" role="dialog">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Arrastrar y soltar para subir la info</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <div id="drop_zone">soltar archivos aquí</div>
+        <output id="list"></output>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-primary">Save changes</button>
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+      </div>
+    </div>
+  </div>
+</div>
+</body>
+<script src="http://code.jquery.com/jquery-2.2.4.js" integrity="sha256-iT6Q9iMJYuQiMWNd9lDyBUStIq/8PuOW33aOqmvFpqI="crossorigin="anonymous"></script>
+<script src="http://code.jquery.com/ui/1.12.0/jquery-ui.min.js" integrity="sha256-eGE6blurk5sHj+rmkfsGYeKyZx3M4bG+ZlFyA7Kns7E=" crossorigin="anonymous"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+<script src="https://twitter.github.io/typeahead.js/releases/latest/typeahead.bundle.js" charset="utf-8"></script>
+<script src="js/bootstrap-confirmation.min.js" charset="utf-8"></script>
+<script src="js/main.js" charset="utf-8"></script>
+
+</html>
