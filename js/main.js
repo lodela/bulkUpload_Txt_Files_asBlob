@@ -17,6 +17,15 @@ $(function(){
           defCrs:'Reglas definidor Centros'
         },
         table:{
+          aaa:{
+            cols:"3",
+            crearEdo:"N/A",
+            estado:"N/A",
+            format:"keyValue",
+            section:"hmlgdsCtas",
+            splitedBy:"tab",
+            type:"txt"
+          },
           archivo1:{
             section : 'cts',
             type: 'txt',
@@ -32,8 +41,8 @@ $(function(){
             splitedBy:'tab',
             format:'N/A',
             cols:'N/A',
-            crearEdo:'SI',
-            estado:'test2'
+            crearEdo:'N/A',
+            estado:'N/A'
           },
           archivo3:{
             section : 'cts',
@@ -46,7 +55,7 @@ $(function(){
           },
           archivo4:{
             section : 'crs',
-            type: 'txt',
+            type: 'csv',
             splitedBy:'arroba',
             format:'horizontal',
             cols:'N/A',
@@ -105,13 +114,56 @@ console.log(DB);
             }
           });
           if(toMatch=='edit'){
-            let o2e     = DB.mantenimiento.bulkUploadTxt.table[btnRel.rel];
-            let section = (o2e['section'])? DB.mantenimiento.bulkUploadTxt.catalogoAdd[o2e['section']]:'';
-            let edo     = (o2e.estado !='N/A')?$('#AddJk2bulkUploadTxt').show():'NO SE MUESTRA ESTADO.';
-            console.log(edo);
-            openModal('#'+toMatch+'_modal');
-            $('#edit_FileName').val('').val(btnRel.rel);
+            $('#saveReg2blkUpld').prop('disabled', false);
+            let o2e      = DB.mantenimiento.bulkUploadTxt.table[btnRel.rel];
+            let section  = (o2e['section'])? DB.mantenimiento.bulkUploadTxt.catalogoAdd[o2e['section']]:'';
+            (o2e.estado !='N/A')?$('#edit_AddJk2bulkUploadTxt').show():$('#edit_AddJk2bulkUploadTxt').hide();
+            let edo      = (o2e.estado   !='N/A')?o2e.estado:'N/A';
+            let crearEdo = (o2e.crearEdo =='N/A')?'<button type="button" class="btn form-control btn-default" id="chk2mkJk" value="N/A" data-color="success"><i class="state-icon glyphicon glyphicon-unchecked"></i>&nbsp;¿Crear jerarquía?</button><input type="checkbox" class="hidden">':(o2e.crearEdo =='SI')?'<button type="button" class="btn form-control btn-success active" id="chk2mkJk" value="SI" data-color="success"><i class="state-icon glyphicon glyphicon-check"></i>&nbsp;¿Crear jerarquía?</button><input type="checkbox" class="hidden">':'<button type="button" class="btn form-control btn-default" id="chk2mkJk" value="NO" data-color="success"><i class="state-icon glyphicon glyphicon-unchecked"></i>&nbsp;¿Crear jerarquía?</button><input type="checkbox" class="hidden">';
+            let type     = (o2e.type != 'txt')?$('#edit_type').val('csv').change():$('#edit_type').val('txt').change();
+            let splitedBy= $('#edit_splytedBy').val(o2e.splitedBy).change();
+            let format   = (o2e.format=='N/A')?$('#edit_cols, #edit_format').append('<option value="N/A" class="na" selected>N/A</option>').prop('disabled', true):$('#edit_format').val(o2e.format).change();
+            $('#edit_AddJk2bulkUploadTxt span.button-checkbox').html('').html(crearEdo).on('click',function(e){
+              e.stopPropagation();
+              e.preventDefault();
+              e.stopImmediatePropagation();
+              let widget   = $(this),
+                  button   = widget.find('button'),
+                  checkbox = widget.find('input:checkbox'),
+                  color    = button.data('color'),
+                  settings = {
+                    on :{icon: 'glyphicon glyphicon-check'},
+                    off:{icon: 'glyphicon glyphicon-unchecked'}
+                  };
+              checkbox.prop('checked', !checkbox.is(':checked'));
+              checkbox.triggerHandler('change');
+              checkbox.on('change', function () {
+                updateDisplay();
+              });
+              // Actions
+              function updateDisplay() {
+                var isChecked = checkbox.is(':checked');
+                button.data('state', (isChecked) ? "on" : "off");
+                button.find('.state-icon').removeClass().addClass('state-icon ' + settings[button.data('state')].icon);
+                if (isChecked) {
+                  button.removeClass('btn-default').addClass('btn-' + color + ' active').attr('value','SI');
+                }else{
+                  button.removeClass('btn-' + color + ' active').addClass('btn-default').attr('value','NO');
+                }
+              }
+              function initCheck(){
+                updateDisplay();
+                if (button.find('.state-icon').length === 0) {
+                  button.prepend('<i class="state-icon ' + settings[button.data('state')].icon + '"></i> ');
+                }
+              }
+              initCheck();
+              return false;
+            });
+            $('#edit_FileName').val('').val(btnRel.rel).attr('disabled',true);
             $('#edit_FileSection').html('').append('<option value="'+o2e['section']+'" selected disabled>'+section+'</option>'+option.join(''));
+            $('#edit_inputJkName').html('').val(edo);
+            openModal('#'+toMatch+'_modal');
           }
         }
       }
@@ -168,9 +220,12 @@ console.log(DB);
           estado   :obj.inputJkName,
           crearEdo :obj.chk2mkJk
         }
-        /*  #######################  */
-        /*  aquí guardar a firebase  */
-        /*  #######################  */
+        /*  #######################    */
+        /*  aquí guardar a firebase    */
+        /*  los datos de los registros */
+        /*  de los archivos a subir    */
+        /*  #######################    */
+
         buildMntoBulkUploadDirectoryTable();
       }
     }
@@ -209,9 +264,9 @@ console.log(DB);
       $('.saveRegister4bulkUpload').prop('disabled', true);
     }
   }
-  $('#selectFileSection').change(function(){
+  $('#selectFileSection, #edit_FileSection').change(function(){
     let sctn = $(this).val();
-    $('#addNewFileFormat').find('.ndd').each(function (i, el){
+    $('#addNewFileFormat, #EditFileFormat').find('.ndd').each(function (i, el){
       $(this).prop('disabled', false);
       $('#'+$(this).attr('id')+' option').each(function(){
         $(this).removeAttr('selected');
@@ -222,27 +277,27 @@ console.log(DB);
       $('.saveRegister4bulkUpload').prop('disabled', false);
     }
     if(sctn == 'defCts' || sctn=='defCrs'){
-      $('#AddJk2bulkUploadTxt').hide();
+      $('#AddJk2bulkUploadTxt, #edit_AddJk2bulkUploadTxt').hide();
       $('#chk2mkJk').attr('class','btn btn-default form-control').attr('value','N/A');
       $('#chk2mkJk i').attr('class','state-icon glyphicon glyphicon-unchecked');
-      $('#inputJkName').val('N/A');
-      $('#cols, #format').append('<option value="N/A" class="na" selected>N/A</option>').prop('disabled', true);
+      $('#inputJkName, #edit_inputJkName').val('N/A');
+      $('#cols, #format, #edit_cols, #edit_format').append('<option value="N/A" class="na" selected>N/A</option>').prop('disabled', true);
     }else if(sctn=='cts'||sctn=='crs'||sctn=='div'||sctn=='mon'||sctn=='tip'){
-      $('#AddJk2bulkUploadTxt').show();
-      $('input#inputJkName').val('');
+      $('#AddJk2bulkUploadTxt, #edit_AddJk2bulkUploadTxt').show();
+      $('input#inputJkName, input#edit_inputJkName').val('');
     }else{
-      $('#AddJk2bulkUploadTxt').hide();
+      $('#AddJk2bulkUploadTxt, #edit_AddJk2bulkUploadTxt').hide();
       $('#chk2mkJk').attr('class','btn btn-default form-control').attr('value','N/A');
       $('#chk2mkJk i').attr('class','state-icon glyphicon glyphicon-unchecked');
-      $('#inputJkName').val('N/A');
+      $('#inputJkName, #edit_inputJkName').val('N/A');
     }
   });
-  $('#format').change(function(){
+  $('#format, #edit_format').change(function(){
     let frmtVal = $(this).val();
     if(frmtVal=='horizontal'){
-      $('#cols').append('<option value="N/A" class="na" selected>N/A</option>').prop('disabled', true);
+      $('#cols, #edit_cols').append('<option value="N/A" class="na" selected>N/A</option>').prop('disabled', true);
     }
-    else{$('#cols').html('').html('<option value="2"> 2 </option><option value="3"> 3 </option><option value="4"> 4 </option><option value="5"> 5 </option><option value="6"> 6 </option><option value="7"> 7 </option>').prop('disabled', false)}
+    else{$('#cols, #edit_cols').html('').html('<option value="2"> 2 </option><option value="3"> 3 </option><option value="4"> 4 </option><option value="5"> 5 </option><option value="6"> 6 </option><option value="7"> 7 </option>').prop('disabled', false)}
   });
 
   function openModal(modal){
@@ -327,10 +382,10 @@ function processData(txt) {
 
 $('.button-checkbox').each(function(){
   // Settings
-  let widget = $(this),
-      button = widget.find('button'),
+  let widget   = $(this),
+      button   = widget.find('button'),
       checkbox = widget.find('input:checkbox'),
-      color = button.data('color'),
+      color    = button.data('color'),
       settings = {
         on: {
           icon: 'glyphicon glyphicon-check'
