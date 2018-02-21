@@ -27,7 +27,7 @@ button span{
 .close span{
   color: red;
 }
-#addNewFileFormat .row{
+#addNewFileFormat .row, #EditFileFormat .row{
   margin:0 0 7px 0;
 }
 #AddJk2bulkUploadTxt{
