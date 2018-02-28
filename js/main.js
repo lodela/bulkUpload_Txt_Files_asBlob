@@ -1,4 +1,5 @@
 $(function(){
+  var action=null;
   var DB = {
     mantenimiento : {
       bulkUploadTxt : {
@@ -94,7 +95,7 @@ console.log(DB);
       option.push('<option value="'+i+'">'+opt+'</option>');
     }
     $('#selectFileSection').html('').append('<option value="null" selected disabled>¿a dónde va a cargar el archivo?</option>'+option.join(''));
-    $('button').on('click',function(){
+    $('button').on('click',function(e){
       let btn,rel,btnRel={rel:''};
       btn = $(this);
       rel = btn.attr('rel');
@@ -114,7 +115,6 @@ console.log(DB);
             }
           });
           if(toMatch=='edit'){
-            $('#saveReg2blkUpld').prop('disabled', false);
             let o2e      = DB.mantenimiento.bulkUploadTxt.table[btnRel.rel];
             let section  = (o2e['section'])? DB.mantenimiento.bulkUploadTxt.catalogoAdd[o2e['section']]:'';
             (o2e.estado !='N/A')?$('#edit_AddJk2bulkUploadTxt').show():$('#edit_AddJk2bulkUploadTxt').hide();
@@ -161,9 +161,10 @@ console.log(DB);
               return false;
             });
             $('#edit_FileName').val('').val(btnRel.rel).attr('disabled',true);
-            $('#edit_FileSection').html('').append('<option value="'+o2e['section']+'" selected disabled>'+section+'</option>'+option.join(''));
+            $('#edit_FileSection').html('').append('<option value="'+o2e['section']+'" selected>'+section+'</option>'+option.join(''));
             $('#edit_inputJkName').html('').val(edo);
             openModal('#'+toMatch+'_modal');
+            return false;
           }
         }
       }
@@ -172,7 +173,7 @@ console.log(DB);
 
   }
   buildMntoBulkUploadDirectoryTable();
-/* contruye la tabla */
+/* /contruye la tabla */
   $('ul.nav li').on('click',function(){
     $('ul.nav li').removeClass('active');
     $(this).addClass('active');
@@ -190,15 +191,10 @@ console.log(DB);
       let rel = btn.attr('rel');
     $('#list').html('');
     if(undefined!=rel){
-      if(rel != 'saveReg2blkUpld'){
-        $('#addNewFileFormat')[0].reset();
-        $('.saveRegister4bulkUpload').prop('disabled', true);
-        openModal('#'+rel+'_modal');
-      }else{
-        console.log('save register to bulk upload...');
-        let firstKey = '';
+      if(rel == 'saveReg2blkUpld' || rel=='editReg2blkUpld'){
+        let idForm = (rel=='saveReg2blkUpld')?'#addNewFileFormat':'#EditFileFormat';
         let obj      = {};
-        $('#addNewFileFormat').find('.form-control').each(function (i, el){
+        $(idForm).find('.form-control').each(function (i, el){
           let key = $(this).attr('id');
           let val = $(this).val();
           if(undefined == obj[key]){
@@ -207,29 +203,56 @@ console.log(DB);
           obj[key] = val;
         });
         delete obj[undefined];
-        var tblReg = DB.mantenimiento.bulkUploadTxt.table;
-        if(undefined == tblReg[obj.inputFileName]){
-          tblReg[obj.inputFileName] = {}
-        }
-        tblReg[obj.inputFileName] = {
-          cols     :obj.cols,
-          format   :obj.format,
-          section  :obj.selectFileSection,
-          splitedBy:obj.splytedBy,
-          type     :obj.type,
-          estado   :obj.inputJkName,
-          crearEdo :obj.chk2mkJk
-        }
-        /*  #######################    */
-        /*  aquí guardar a firebase    */
-        /*  los datos de los registros */
-        /*  de los archivos a subir    */
-        /*  #######################    */
-
-        buildMntoBulkUploadDirectoryTable();
+        const guardar = new save(obj);
+        console.log(guardar.save);
+      }else{
+        $('#addNewFileFormat')[0].reset();
+        openModal('#'+rel+'_modal');
       }
+      return;
     }
   });
+  class save{
+    constructor(obj){
+      this.obj       = obj;
+      this.keyName   = (undefined == obj.inputFileName)?obj.edit_FileName:obj.inputFileName;
+      this.cols      = (undefined == obj.cols)?obj.edit_cols:obj.cols;
+      this.format    = (undefined == obj.format)?obj.edit_format:obj.format;
+      this.section   = (undefined == obj.selectFileSection)?obj.edit_FileSection:obj.selectFileSection;
+      this.splitedBy = (undefined == obj.splytedBy)?obj.edit_splytedBy:obj.splytedBy;
+      this.type      = (undefined == obj.type)?obj.edit_type:obj.type;
+      this.estado    = (undefined == obj.inputJkName)?obj.edit_inputJkName:obj.inputJkName;
+      this.crearEdo  = obj.chk2mkJk;
+    }
+    get save(){
+      this._save();
+      return('save OK');
+    }
+    _save(){
+      var tblReg = DB.mantenimiento.bulkUploadTxt.table;
+      if(undefined == tblReg[this.keyName]){
+        tblReg[this.keyName] = {}
+      }
+      tblReg[this.keyName] = {
+        cols     : this.cols,
+        format   : this.format,
+        section  : this.section,
+        splitedBy: this.splitedBy,
+        type     : this.type,
+        estado   : this.estado,
+        crearEdo : this.crearEdo
+      }
+
+      /*  #######################    */
+      /*  aquí guardar a firebase    */
+      /*  los datos de los registros */
+      /*  de los archivos a subir    */
+      /*  #######################    */
+
+      $('#edit_modal').modal('hide');
+      buildMntoBulkUploadDirectoryTable();
+    }
+  }
   $('#inputFileName').focusout(function(){
     let name = ($(this).val().trim())?$(this).val().trim():null;
     checkNameStatus(name);
@@ -237,7 +260,6 @@ console.log(DB);
   $('.modal-footer').mouseenter(function(){
     let name = ($('#inputFileName').val().trim())?$('#inputFileName').val().trim():null;
     let nmJk = ($('#inputFileName').val().trim())?$('#inputFileName').val().trim():null;
-    checkNameStatus(name);
   });
   function checkNameStatus(name){
     if (null != name && DB.mantenimiento.bulkUploadTxt.keyFileNames.indexOf(name) === -1) {
@@ -315,14 +337,21 @@ console.log(DB);
       name: 'fileName',
       source: fileName
     });
-    $(modal).on('show', function(){
-      console.log('hola');
-      $('#inputFileName').focus(1000);
-    });
     $(modal).modal({
       show: true
     });
   }
+  $('#edit_modal').on('shown.bs.modal',function(e){
+    $('.saveRegister4bulkUpload').prop('disabled', false);
+    $('.saveRegister4bulkUpload').attr('rel','editReg2blkUpld');
+  });
+  $('#addNewRegister2BulkUpload_modal').on('shown.bs.modal',function(e){
+    $('.saveRegister4bulkUpload').prop('disabled', true);
+    $('.saveRegister4bulkUpload').attr('rel','saveReg2blkUpld');
+    $('#inputFileName').focus();
+  });
+  // $('.saveRegister4bulkUpload').prop('disabled', true);
+
 
   // Setup listeners.
   var dropZone = document.getElementById('drop_zone');
