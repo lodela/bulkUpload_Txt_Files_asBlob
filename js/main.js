@@ -193,7 +193,7 @@ console.log(DB);
     if(undefined!=rel){
       if(rel == 'saveReg2blkUpld' || rel=='editReg2blkUpld'){
         let idForm = (rel=='saveReg2blkUpld')?'#addNewFileFormat':'#EditFileFormat';
-        let obj      = {};
+        let obj = {};
         $(idForm).find('.form-control').each(function (i, el){
           let key = $(this).attr('id');
           let val = $(this).val();
@@ -249,18 +249,11 @@ console.log(DB);
       /*  de los archivos a subir    */
       /*  #######################    */
 
-      $('#edit_modal').modal('hide');
+      $('.modal').modal('hide');
       buildMntoBulkUploadDirectoryTable();
     }
   }
-  $('#inputFileName').focusout(function(){
-    let name = ($(this).val().trim())?$(this).val().trim():null;
-    checkNameStatus(name);
-  });
-  $('.modal-footer').mouseenter(function(){
-    let name = ($('#inputFileName').val().trim())?$('#inputFileName').val().trim():null;
-    let nmJk = ($('#inputFileName').val().trim())?$('#inputFileName').val().trim():null;
-  });
+
   function checkNameStatus(name){
     if (null != name && DB.mantenimiento.bulkUploadTxt.keyFileNames.indexOf(name) === -1) {
       // console.log('element doesn´t exist');
@@ -349,6 +342,18 @@ console.log(DB);
     $('.saveRegister4bulkUpload').prop('disabled', true);
     $('.saveRegister4bulkUpload').attr('rel','saveReg2blkUpld');
     $('#inputFileName').focus();
+    $('#inputFileName').focusout(function(){
+      let name = ($(this).val().trim())?$(this).val().trim():null;
+      checkNameStatus(name);
+    });
+    $('.modal-footer').mouseenter(function(){
+      console.log('que chow');
+      let name = ($('#inputFileName').val().trim())?$('#inputFileName').val().trim():null;
+      let nmJk = ($('#inputFileName').val().trim())?$('#inputFileName').val().trim():null;
+      if(null==name || null == nmJk){
+        $('.saveRegister4bulkUpload').prop('disabled', true);
+      }
+    });
   });
   // $('.saveRegister4bulkUpload').prop('disabled', true);
 
